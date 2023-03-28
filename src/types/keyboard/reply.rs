@@ -23,6 +23,8 @@ pub enum RequestPollKind {
 
 impl serde::Serialize for RequestPollKind {
     fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+        // It may look like bool to int conversion, but it isn't.
+        #[allow(clippy::bool_to_int_with_if)]
         let mut map =
             s.serialize_map(Some(if *self == Self::Any { 0 } else { 1 }))?;
 

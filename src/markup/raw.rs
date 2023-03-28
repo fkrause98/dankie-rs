@@ -17,7 +17,7 @@ pub struct Raw<T>(T);
 /// unchecked user-provided input may insert its own formatting, which may be
 /// undesrirable. Note that all other utilities automatically escape provided
 /// strings as needed.
-pub fn raw<I, T>(iterator: I) -> Raw<I>
+pub const fn raw<I, T>(iterator: I) -> Raw<I>
 where
     for<'a> &'a I: IntoIterator<Item = &'a T>,
     T: Deref<Target = str>,
@@ -33,7 +33,7 @@ where
     fn format(&self, formatter: &mut Formatter, _: Nesting) -> fmt::Result {
         (&self.0)
             .into_iter()
-            .try_for_each(|x| formatter.write_str(&*x))
+            .try_for_each(|x| formatter.write_str(x))
     }
 }
 

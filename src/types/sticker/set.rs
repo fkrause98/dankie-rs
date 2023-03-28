@@ -9,7 +9,7 @@ use std::fmt::{self, Formatter};
 /// Represents different kinds of a [`sticker::Set`].
 ///
 /// [`sticker::Set`]: Set
-#[derive(Debug, PartialEq, Clone, Copy, Is)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Is)]
 #[non_exhaustive]
 pub enum Kind {
     /// The stickers in the sticker set are neither animated nor masks.

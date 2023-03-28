@@ -48,8 +48,8 @@ impl Display for MethodCall {
             Self::Parse { response, error } => write!(
                 formatter,
                 "A method call failed because `tbot` failed to parse the \
-                response.\n\n\
-
+                response.\n\
+                \n\
                 The response was: {response:?}\n\
                 The error was: {error}",
                 response = response,
@@ -63,8 +63,8 @@ impl Display for MethodCall {
             } => write!(
                 formatter,
                 "A method call failed because Telegram responded with an error \
-                {error_code} `{description}`. Additional information:\n\n\
-
+                {error_code} `{description}`. Additional information:\n\
+                \n\
                 - migrate_to_chat_id: {chat_id:?}\n\
                 - retry_after: {retry_after:?}",
                 error_code = error_code,

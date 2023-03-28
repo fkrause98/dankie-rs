@@ -83,14 +83,14 @@ where
     *request.uri_mut() = construct_uri(bot, method)
         .expect("[tbot] Method URI construction failed");
 
-    let content_type = if let Some(boundary) = boundary {
-        let value = format!("multipart/form-data; boundary={}", boundary);
-
-        // disallowed characters shouldn't appear
-        HeaderValue::from_str(&value).unwrap()
-    } else {
-        HeaderValue::from_static("application/json")
-    };
+    let content_type = boundary.map_or_else(
+        || HeaderValue::from_static("application/json"),
+        |boundary| {
+            let value = format!("multipart/form-data; boundary={}", boundary);
+            // disallowed characters shouldn't appear
+            HeaderValue::from_str(&value).unwrap()
+        },
+    );
 
     request
         .headers_mut()
@@ -144,12 +144,10 @@ where
         return Ok(result);
     }
 
-    let (migrate_to_chat_id, retry_after) = match response.parameters {
-        Some(parameters) => {
+    let (migrate_to_chat_id, retry_after) =
+        response.parameters.map_or((None, None), |parameters| {
             (parameters.migrate_to_chat_id, parameters.retry_after)
-        }
-        None => (None, None),
-    };
+        });
 
     // If result is empty, then it's an error. In this case, description and
     // error_code are guaranteed to be specified in the response, so we can

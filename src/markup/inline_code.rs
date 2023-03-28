@@ -10,7 +10,7 @@ use std::{
 pub struct InlineCode<T>(T);
 
 /// Formats an inline piece of code.
-pub fn inline_code<T>(code: T) -> InlineCode<T>
+pub const fn inline_code<T>(code: T) -> InlineCode<T>
 where
     T: Deref<Target = str>,
 {

@@ -240,26 +240,26 @@ impl Text {
     /// Checks if no parse mode is set, i.e. this `Text` instance contains
     /// plain text.
     #[must_use]
-    pub fn is_plain(&self) -> bool {
-        self.parse_mode == None
+    pub const fn is_plain(&self) -> bool {
+        self.parse_mode.is_none()
     }
 
     /// Checks if the parse mode is set to `MarkdownV2`.
     #[must_use]
-    pub fn is_markdown_v2(&self) -> bool {
-        self.parse_mode == Some(ParseMode::MarkdownV2)
+    pub const fn is_markdown_v2(&self) -> bool {
+        matches!(self.parse_mode, Some(ParseMode::MarkdownV2))
     }
 
     /// Checks if the parse mode is set to `Markdown`.
     #[must_use]
-    pub fn is_markdown(&self) -> bool {
-        self.parse_mode == Some(ParseMode::Markdown)
+    pub const fn is_markdown(&self) -> bool {
+        matches!(self.parse_mode, Some(ParseMode::Markdown))
     }
 
     /// Checks if the parse mode is set to `Html`.
     #[must_use]
-    pub fn is_html(&self) -> bool {
-        self.parse_mode == Some(ParseMode::Html)
+    pub const fn is_html(&self) -> bool {
+        matches!(self.parse_mode, Some(ParseMode::Html))
     }
 }
 

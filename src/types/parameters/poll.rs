@@ -7,6 +7,7 @@ use std::convert::From;
 
 /// Configures whether multiple answers are allowed in a poll.
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Is)]
+#[must_use]
 pub enum Answer {
     /// Only a single answer is allowed.
     Single,
@@ -17,6 +18,7 @@ pub enum Answer {
 /// Tells when the poll is automatically closed.
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Is)]
 #[non_exhaustive]
+#[must_use]
 #[serde(rename_all = "snake_case")]
 pub enum AutoClose {
     /// Reflects the `open_period` field.
@@ -27,6 +29,7 @@ pub enum AutoClose {
 
 /// Represents a quiz.
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize)]
+#[must_use]
 pub struct Quiz {
     correct_option_id: usize,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -37,6 +40,7 @@ pub struct Quiz {
 
 /// Represents a poll.
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize)]
+#[must_use]
 pub struct Poll {
     allows_multiple_answers: bool,
 }
@@ -44,6 +48,7 @@ pub struct Poll {
 /// Represents either a quiz or a poll.
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Is)]
 #[serde(tag = "type", rename_all = "snake_case")]
+#[must_use]
 pub enum Kind {
     /// Represents a quiz.
     Quiz(Quiz),
@@ -54,6 +59,7 @@ pub enum Kind {
 
 /// Represents a poll that will be sent to a user.
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize)]
+#[must_use]
 pub struct Any {
     #[serde(flatten)]
     kind: Kind,
@@ -70,7 +76,6 @@ pub struct Any {
 
 impl Quiz {
     /// Constructs a new quiz.
-    #[must_use]
     pub const fn new(correct_option_id: usize) -> Self {
         Self {
             correct_option_id,
@@ -91,7 +96,6 @@ impl Quiz {
 
 impl Poll {
     /// Constructs a new poll.
-    #[must_use]
     pub fn new(answer: Answer) -> Self {
         Self {
             allows_multiple_answers: answer == Answer::Multiple,
@@ -101,7 +105,6 @@ impl Poll {
 
 impl Any {
     /// Constructs a poll.
-    #[must_use]
     pub fn new(
         question: impl Into<String>,
         options: impl Into<Vec<String>>,
@@ -118,14 +121,12 @@ impl Any {
     }
 
     /// Configures if the poll is immediately closed.
-    #[must_use]
     pub const fn is_immediately_closed(mut self, is_closed: bool) -> Self {
         self.is_closed = Some(is_closed);
         self
     }
 
     /// Comfigures if the poll is anonymous.
-    #[must_use]
     pub const fn is_anonymous(mut self, is_anonymous: bool) -> Self {
         self.is_anonymous = Some(is_anonymous);
         self
@@ -133,7 +134,6 @@ impl Any {
 
     /// Configures when the poll is automatically closed.
     /// Reflects the `open_period` and `close_date` parameters.
-    #[must_use]
     pub const fn auto_close(mut self, auto_close: AutoClose) -> Self {
         self.auto_close = Some(auto_close);
         self

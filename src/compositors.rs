@@ -148,7 +148,7 @@ where
 
         Box::pin(async move {
             let (mapper, handler) = &*shared;
-            handler(mapper(context).await).await
+            handler(mapper(context).await).await;
         })
     }
 }
@@ -190,7 +190,7 @@ where
         Box::pin(async move {
             let (mapper, handler) = &*shared;
             if let Some(mapped) = mapper(context).await {
-                handler(mapped).await
+                handler(mapped).await;
             }
         })
     }

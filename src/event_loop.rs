@@ -952,7 +952,7 @@ impl EventLoop {
             }
             message::Kind::SupergroupCreated
             | message::Kind::ChannelCreated => {
-                warn!("Update not expected; skipping it")
+                warn!("Update not expected; skipping it");
             }
             kind if self.will_handle::<Unhandled>() => {
                 let message = Message::new(data, kind);
@@ -1155,7 +1155,7 @@ impl EventLoop {
             kind if self.will_handle::<Unhandled>() => {
                 let message = Message::new(data, kind);
                 let update = update::Kind::EditedMessage(message);
-                self.handle_unhandled(update)
+                self.handle_unhandled(update);
             }
             message::Kind::Animation { .. }
             | message::Kind::Audio { .. }
@@ -1239,12 +1239,14 @@ fn trim_command(text: message::Text) -> message::Text {
 }
 
 fn normalize_cmd_name(command: &str) -> &str {
-    if command.starts_with('/') {
+    // Putting side effects into functional combinators doesn't look very good.
+    #[allow(clippy::option_if_let_else)]
+    if let Some(stripped) = command.strip_prefix('/') {
         tracing::warn!(
             ?command,
             "Commands should not start with `/`. `tbot` will strip it, but it is idiomatic to omit it in the source code.",
         );
-        &command[1..]
+        stripped
     } else {
         command
     }

@@ -73,14 +73,14 @@ impl<'v> Visitor<'v> for WebhookInfoVisitor {
             match key {
                 URL => url = Some(map.next_value()?),
                 HAS_CUSTOM_CERTIFICATE => {
-                    has_custom_certificate = Some(map.next_value()?)
+                    has_custom_certificate = Some(map.next_value()?);
                 }
                 PENDING_UPDATE_COUNT => {
-                    pending_update_count = Some(map.next_value()?)
+                    pending_update_count = Some(map.next_value()?);
                 }
                 LAST_ERROR_DATE => last_error_date = Some(map.next_value()?),
                 LAST_ERROR_MESSAGE => {
-                    last_error_message = Some(map.next_value()?)
+                    last_error_message = Some(map.next_value()?);
                 }
                 MAX_CONNECTIONS => max_connections = Some(map.next_value()?),
                 ALLOWED_UPDATES => allowed_updates = Some(map.next_value()?),

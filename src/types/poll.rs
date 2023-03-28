@@ -134,24 +134,26 @@ impl<'v> Visitor<'v> for PollVisitor {
                 QUESTION => question = Some(map.next_value()?),
                 OPTIONS => options = Some(map.next_value()?),
                 TOTAL_VOTER_COUNT => {
-                    total_voter_count = Some(map.next_value()?)
+                    total_voter_count = Some(map.next_value()?);
                 }
                 IS_CLOSED => is_closed = Some(map.next_value()?),
                 IS_ANONYMOUS => is_anonymous = Some(map.next_value()?),
                 KIND => kind = Some(map.next_value()?),
                 ALLOWS_MULTIPLE_ANSWERS => {
-                    allows_multiple_answers = Some(map.next_value()?)
+                    allows_multiple_answers = Some(map.next_value()?);
                 }
                 CORRECT_OPTION_ID => {
-                    correct_option_id = Some(map.next_value()?)
+                    correct_option_id = Some(map.next_value()?);
                 }
                 EXPLANATION => explanation = Some(map.next_value()?),
                 EXPLANATION_ENTITIES => {
-                    explanation_entities = Some(map.next_value()?)
+                    explanation_entities = Some(map.next_value()?);
                 }
                 OPEN_PERIOD => open_period = Some(map.next_value()?),
                 CLOSE_DATE => close_date = Some(map.next_value()?),
-                _ => drop(map.next_value::<de::IgnoredAny>()),
+                _ => {
+                    let _ = map.next_value::<de::IgnoredAny>();
+                }
             }
         }
 

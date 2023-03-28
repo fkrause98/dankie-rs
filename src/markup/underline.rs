@@ -7,7 +7,7 @@ use std::fmt::{self, Formatter};
 pub struct Underline<T>(T);
 
 /// Formats text underlined.
-pub fn underline<T: Formattable>(text: T) -> Underline<T> {
+pub const fn underline<T: Formattable>(text: T) -> Underline<T> {
     Underline(text)
 }
 

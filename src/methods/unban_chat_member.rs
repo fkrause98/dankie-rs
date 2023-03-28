@@ -51,7 +51,7 @@ impl UnbanChatMember<'_> {
     /// Calls the method.
     pub async fn call(self) -> Result<(), errors::MethodCall> {
         call_method::<bool>(
-            &*self.bot,
+            self.bot,
             "unbanChatMember",
             None,
             serde_json::to_vec(&self).unwrap(),

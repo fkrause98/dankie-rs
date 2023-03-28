@@ -79,7 +79,7 @@ impl<'v> serde::de::Visitor<'v> for QueryVisitor {
                 FROM => from = Some(map.next_value()?),
                 MESSAGE => message = Some(map.next_value()?),
                 INLINE_MESSAGE_ID => {
-                    inline_message_id = Some(map.next_value()?)
+                    inline_message_id = Some(map.next_value()?);
                 }
                 CHAT_INSTANCE => chat_instance = Some(map.next_value()?),
                 DATA => data = Some(map.next_value()?),

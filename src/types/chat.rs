@@ -100,7 +100,7 @@ impl<'v> serde::de::Visitor<'v> for ChatVisitor {
                 SLOW_MODE_DELAY => slow_mode_delay = Some(map.next_value()?),
                 STICKER_SET_NAME => sticker_set_name = Some(map.next_value()?),
                 CAN_SET_STICKER_SET => {
-                    can_set_sticker_set = Some(map.next_value()?)
+                    can_set_sticker_set = Some(map.next_value()?);
                 }
                 LOCATION => chat_location = Some(map.next_value()?),
                 LINKED_CHAT_ID => linked_chat_id = Some(map.next_value()?),

@@ -91,7 +91,7 @@ pub struct Html<T>(T);
 struct Displayable<T>(Html<T>);
 
 /// Creates HTML text.
-pub fn html<T: Formattable>(content: T) -> Html<T> {
+pub const fn html<T: Formattable>(content: T) -> Html<T> {
     Html(content)
 }
 

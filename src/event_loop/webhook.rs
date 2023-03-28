@@ -158,7 +158,7 @@ async fn handle(
     request: Request<Body>,
     updates_url: Arc<String>,
 ) -> Result<Response<Body>, hyper::Error> {
-    if is_request_correct(&request, &*updates_url) {
+    if is_request_correct(&request, &updates_url) {
         let (parts, mut body) = request.into_parts();
         let mut request = parts
             .headers

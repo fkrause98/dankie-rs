@@ -1,6 +1,6 @@
 use crate::types::parameters::ChatId;
 use serde::Serialize;
-use std::{borrow::Cow, collections::HashSet, iter::repeat};
+use std::{borrow::Cow, collections::HashSet};
 
 enum Header<'a> {
     Field(&'static str),
@@ -155,8 +155,7 @@ impl<'a> Multipart<'a> {
             })
             .unwrap();
 
-        let boundary_string: String =
-            repeat('-').take(boundary_length).collect();
+        let boundary_string = "-".repeat(boundary_length);
         let boundary = boundary_string.as_bytes();
 
         let mut body = Vec::new();

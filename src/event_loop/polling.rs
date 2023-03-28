@@ -193,7 +193,7 @@ impl Polling {
                 Err(error) => error_handler(error.into()),
             }
 
-            next_tick.await
+            next_tick.await;
         }
     }
 }
