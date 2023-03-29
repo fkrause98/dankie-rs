@@ -59,7 +59,7 @@ impl InputFile {
     {
         match self {
             Self::File { .. } => {
-                serializer.serialize_str(&format!("attach://{}", name))
+                serializer.serialize_str(&format!("attach://{name}"))
             }
             Self::Url(file) | Self::Id(file::Id(file)) => {
                 serializer.serialize_str(file)

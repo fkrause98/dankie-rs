@@ -143,9 +143,8 @@ impl EventLoop {
 
     #[allow(clippy::needless_pass_by_value)]
     fn handle<C: Context>(&self, context: Arc<C>) {
-        let handlers = match self.update_handlers.get::<Handlers<C>>() {
-            Some(handlers) => handlers,
-            None => return,
+        let Some(handlers) = self.update_handlers.get::<Handlers<C>>() else {
+            return;
         };
 
         handlers
@@ -597,23 +596,9 @@ impl EventLoop {
                     self.handle_unhandled(update);
                 }
                 Query {
-                    kind: callback::Kind::Data(..),
-                    origin: callback::Origin::Message(..),
-                    ..
-                }
-                | Query {
-                    kind: callback::Kind::Data(..),
-                    origin: callback::Origin::Inline(..),
-                    ..
-                }
-                | Query {
-                    kind: callback::Kind::Game(..),
-                    origin: callback::Origin::Message(..),
-                    ..
-                }
-                | Query {
-                    kind: callback::Kind::Game(..),
-                    origin: callback::Origin::Inline(..),
+                    kind: callback::Kind::Data(..) | callback::Kind::Game(..),
+                    origin:
+                        callback::Origin::Message(..) | callback::Origin::Inline(..),
                     ..
                 } => (),
             },
@@ -999,9 +984,7 @@ impl EventLoop {
     #[allow(clippy::too_many_lines, clippy::cognitive_complexity)] // can't split the huge match
     fn handle_message_edit_update(&self, message: types::Message) {
         let (data, kind) = message.split();
-        let edit_date = if let Some(edit_date) = data.edit_date {
-            edit_date
-        } else {
+        let Some(edit_date) = data.edit_date else {
             error!("No `edit_date` on an edited message; skipping it");
             return;
         };

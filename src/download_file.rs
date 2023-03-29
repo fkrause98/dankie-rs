@@ -19,10 +19,10 @@ fn construct_uri(
     if !new_path.ends_with('/') {
         new_path.push('/');
     }
-    write!(&mut new_path, "file/bot{}/{}", bot.token(), file_path)?;
+    write!(&mut new_path, "file/bot{}/{file_path}", bot.token())?;
 
     if let Some(query) = query {
-        write!(&mut new_path, "?{}", query)?;
+        write!(&mut new_path, "?{query}")?;
     }
 
     uri_parts.path_and_query = Some(new_path.parse()?);
@@ -34,9 +34,8 @@ pub async fn download_file(
     bot: &InnerBot,
     file: &File,
 ) -> Result<Vec<u8>, errors::Download> {
-    let path = match &file.path {
-        Some(path) => path,
-        None => return Err(errors::Download::NoPath),
+    let Some(path) = &file.path else {
+        return Err(errors::Download::NoPath);
     };
 
     if Path::new(&path).is_absolute() {

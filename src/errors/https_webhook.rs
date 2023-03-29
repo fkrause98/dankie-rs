@@ -34,44 +34,37 @@ impl Display for HttpsWebhook {
             Self::SetWebhook(error) => write!(
                 formatter,
                 "The webhook event loop failed because a call to `setWebhook` \
-                 failed with an error: {}",
-                error,
+                 failed with an error: {error}",
             ),
             Self::SetWebhookTimeout(timeout) => write!(
                 formatter,
                 "The webhook event loop failed because a call to `setWebhook` \
-                 timed out: {}",
-                timeout,
+                 timed out: {timeout}",
             ),
             Self::SetMyCommands(error) => write!(
                 formatter,
                 "The webhook event loop failed because a call to `setMyCommands` \
-                 failed with an error: {}",
-                error,
+                 failed with an error: {error}",
             ),
             Self::SetMyCommandsTimeout(timeout) => write!(
                 formatter,
                 "The webhook event loop failed because a call to `setMyCommands` \
-                timed out: {}",
-                timeout,
+                timed out: {timeout}",
             ),
             Self::Tls(timeout) => write!(
                 formatter,
                 "The webhook event loop failed because TLS initialization \
-                 failed with an error: {}",
-                timeout,
+                 failed with an error: {timeout}",
             ),
             Self::Bind(timeout) => write!(
                 formatter,
                 "The webhook event loop failed because failed to bind to a \
-                 port: {}",
-                timeout,
+                 port: {timeout}",
             ),
             Self::Server(error) => write!(
                 formatter,
                 "The webhook event loop failed because the server returned \
-                 an error: {}",
-                error,
+                 an error: {error}",
             ),
         }
     }

@@ -57,22 +57,22 @@ impl AnyGroupMedia<'_> {
     {
         match self {
             Self::Photo(photo) => {
-                let name = format!("photo_{}", index);
+                let name = format!("photo_{index}");
                 photo.serialize_with_name(serializer, &name)
             }
             Self::Video(video) => {
-                let video_name = format!("video_{}", index);
-                let thumb_name = format!("thumb_{}", index);
+                let video_name = format!("video_{index}");
+                let thumb_name = format!("thumb_{index}");
                 video.serialize_with_names(serializer, &video_name, &thumb_name)
             }
             Self::Audio(audio) => {
-                let audio_name = format!("audio_{}", index);
-                let thumb_name = format!("thumb_{}", index);
+                let audio_name = format!("audio_{index}");
+                let thumb_name = format!("thumb_{index}");
                 audio.serialize_with_names(serializer, &audio_name, &thumb_name)
             }
             Self::Document(document) => {
-                let document_name = format!("document_{}", index);
-                let thumb_name = format!("thumb_{}", index);
+                let document_name = format!("document_{index}");
+                let thumb_name = format!("thumb_{index}");
                 document.serialize_with_names(
                     serializer,
                     &document_name,

@@ -86,7 +86,7 @@ where
         formatter.write_str("<pre>")?;
 
         if let Some(language) = &self.language {
-            write!(formatter, "<code class=\"language-{}\">", language)?;
+            write!(formatter, "<code class=\"language-{language}\">")?;
         }
 
         html::Formattable::format(&&*self.code, formatter, nesting)?;

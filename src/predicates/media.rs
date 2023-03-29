@@ -20,20 +20,13 @@ where
         let extensions = Arc::clone(&extensions);
 
         Box::pin(async move {
-            let file_name = if let Some(file_name) =
-                context.document().file_name.as_ref()
-            {
-                file_name
-            } else {
+            let Some(file_name) = context.document().file_name.as_ref() else {
                 return false;
             };
 
-            let extension =
-                if let Some(extension) = Path::new(&file_name).extension() {
-                    extension
-                } else {
-                    return false;
-                };
+            let Some(extension) = Path::new(&file_name).extension() else {
+                return false;
+            };
 
             let extension = extension.to_string_lossy();
 

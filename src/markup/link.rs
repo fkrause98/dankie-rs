@@ -61,7 +61,7 @@ where
                 formatter.write_char(x)
             })?,
             Kind::Mention(user::Id(id)) => {
-                write!(formatter, "tg://user?id={}", id)?;
+                write!(formatter, "tg://user?id={id}")?;
             }
         }
         formatter.write_char(')')
@@ -88,7 +88,7 @@ where
                 formatter.write_char(x)
             })?,
             Kind::Mention(user::Id(id)) => {
-                write!(formatter, "tg://user?id={}", id)?;
+                write!(formatter, "tg://user?id={id}")?;
             }
         }
 

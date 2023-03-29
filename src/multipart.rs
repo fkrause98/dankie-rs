@@ -13,9 +13,9 @@ enum Header<'a> {
 impl<'a> Header<'a> {
     pub fn content_disposition(&self) -> String {
         match self {
-            Header::Field(name) => format!("name=\"{}\"", name),
+            Header::Field(name) => format!("name=\"{name}\""),
             Header::File { name, filename } => {
-                format!("name=\"{}\"; filename=\"{}\"", name, filename)
+                format!("name=\"{name}\"; filename=\"{filename}\"")
             }
         }
     }

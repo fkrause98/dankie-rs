@@ -18,7 +18,7 @@ struct DebugBytes<'a>(&'a [u8]);
 impl Debug for DebugBytes<'_> {
     fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
         if let Ok(string) = from_utf8(self.0) {
-            write!(formatter, "{}", string)
+            write!(formatter, "{string}")
         } else {
             write!(formatter, "{:?}", self.0)
         }
@@ -58,7 +58,7 @@ fn construct_uri(
     write!(&mut new_path, "bot{}/{}", bot.token(), method)?;
 
     if let Some(query) = query {
-        write!(&mut new_path, "?{}", query)?;
+        write!(&mut new_path, "?{query}")?;
     }
 
     uri_parts.path_and_query = Some(new_path.parse()?);
@@ -86,7 +86,7 @@ where
     let content_type = boundary.map_or_else(
         || HeaderValue::from_static("application/json"),
         |boundary| {
-            let value = format!("multipart/form-data; boundary={}", boundary);
+            let value = format!("multipart/form-data; boundary={boundary}");
             // disallowed characters shouldn't appear
             HeaderValue::from_str(&value).unwrap()
         },

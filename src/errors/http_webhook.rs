@@ -27,32 +27,27 @@ impl Display for HttpWebhook {
             Self::SetWebhook(error) => write!(
                 formatter,
                 "The webhook event loop failed because a call to `setWebhook` \
-                 failed with an error: {}",
-                error,
+                 failed with an error: {error}",
             ),
             Self::SetWebhookTimeout(timeout) => write!(
                 formatter,
                 "The webhook event loop failed because a call to `setWebhook` \
-                timed out: {}",
-                timeout,
+                timed out: {timeout}",
             ),
             Self::SetMyCommands(error) => write!(
                 formatter,
                 "The webhook event loop failed because a call to `setMyCommands` \
-                 failed with an error: {}",
-                error,
+                 failed with an error: {error}",
             ),
             Self::SetMyCommandsTimeout(timeout) => write!(
                 formatter,
                 "The webhook event loop failed because a call to `setMyCommands` \
-                timed out: {}",
-                timeout,
+                timed out: {timeout}",
             ),
             Self::Server(error) => write!(
                 formatter,
                 "The webhook event loop failed because the server returned \
-                 an error: {}",
-                error,
+                 an error: {error}",
             ),
         }
     }
