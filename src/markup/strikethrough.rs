@@ -7,7 +7,7 @@ use std::fmt::{self, Formatter, Write};
 pub struct Strikethrough<T>(T);
 
 /// Formats text with strikethrough.
-pub fn strikethrough<T: Formattable>(text: T) -> Strikethrough<T> {
+pub const fn strikethrough<T: Formattable>(text: T) -> Strikethrough<T> {
     Strikethrough(text)
 }
 

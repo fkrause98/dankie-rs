@@ -38,8 +38,7 @@ impl Display for MethodCall {
         match self {
             Self::Network(error) => write!(
                 formatter,
-                "A method call failed because of a network error: {}",
-                error,
+                "A method call failed because of a network error: {error}",
             ),
             Self::OutOfService => write!(
                 formatter,
@@ -48,12 +47,10 @@ impl Display for MethodCall {
             Self::Parse { response, error } => write!(
                 formatter,
                 "A method call failed because `tbot` failed to parse the \
-                response.\n\n\
-
+                response.\n\
+                \n\
                 The response was: {response:?}\n\
                 The error was: {error}",
-                response = response,
-                error = error,
             ),
             Self::RequestError {
                 description,
@@ -63,14 +60,10 @@ impl Display for MethodCall {
             } => write!(
                 formatter,
                 "A method call failed because Telegram responded with an error \
-                {error_code} `{description}`. Additional information:\n\n\
-
-                - migrate_to_chat_id: {chat_id:?}\n\
+                {error_code} `{description}`. Additional information:\n\
+                \n\
+                - migrate_to_chat_id: {migrate_to_chat_id:?}\n\
                 - retry_after: {retry_after:?}",
-                error_code = error_code,
-                description = description,
-                chat_id = migrate_to_chat_id,
-                retry_after = retry_after,
             ),
         }
     }

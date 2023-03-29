@@ -34,8 +34,8 @@ impl Polling {
             timeout: None,
             allowed_updates: None,
             poll_interval: Duration::from_millis(25),
-            error_handler: Box::new(|err| {
-                eprintln!("[tbot] Polling error: {:#?}", err);
+            error_handler: Box::new(|error| {
+                eprintln!("[tbot] Polling error: {error:#?}");
             }),
             request_timeout: None,
             offset: None,
@@ -169,12 +169,11 @@ impl Polling {
                             Ok(update) => event_loop
                                 .handle_update(update),
                             Err(error) => eprintln!(
-                                "[tbot] Failed to parse an update: {:?}. `tbot` \
-                                 will skip it, but this error means that \
+                                "[tbot] Failed to parse an update: {error:?}.
+                                 `tbot` will skip it, but this error means that \
                                  `tbot`'s type deserialization doesn't match \
                                  the Bot API. You should file an issue at \
                                  https://gitlab.com/SnejUgal/tbot.",
-                                error
                             ),
                         }
                     }
@@ -193,7 +192,7 @@ impl Polling {
                 Err(error) => error_handler(error.into()),
             }
 
-            next_tick.await
+            next_tick.await;
         }
     }
 }

@@ -161,10 +161,10 @@ impl<'v> Visitor<'v> for ButtonVisitor {
                 URL => url = Some(map.next_value()?),
                 CALLBACK_DATA => callback_data = Some(map.next_value()?),
                 SWITCH_INLINE_QUERY => {
-                    switch_inline_query = Some(map.next_value()?)
+                    switch_inline_query = Some(map.next_value()?);
                 }
                 SWITCH_INLINE_QUERY_CURRENT_CHAT => {
-                    switch_inline_query_current_chat = Some(map.next_value()?)
+                    switch_inline_query_current_chat = Some(map.next_value()?);
                 }
                 CALLBACK_GAME => callback_game = Some(map.next_value()?),
                 PAY => pay = map.next_value()?,

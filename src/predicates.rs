@@ -3,6 +3,10 @@
 // `tbot`'s types are `Send`, and users can't implement `tbot`'s traits anyway,
 // so adding `+ Send + Sync` will only make docs too explicit
 #![allow(clippy::future_not_send)]
+// Functions defined in this module are intended to be used in places where
+// async functions are expected. It will be inconvinient for users to wrap
+// manually our ready-made predicates in async functions.
+#![allow(clippy::unused_async)]
 
 pub mod chat;
 pub mod media;

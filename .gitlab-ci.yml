@@ -1,5 +1,5 @@
 default:
-    image: rust:1.50.0 # update `run-tests`
+    image: rust:1.65.0 # update `run-tests`
     before_script:
         - export PATH=$PATH:/root/.cargo/bin/
         - rustup component add clippy
@@ -9,7 +9,7 @@ check-formatting:
     stage: test
     image: rust:latest
     script:
-        - cargo +stable fmt -- --check
+        - cargo fmt -- --check
     only:
         changes:
             - "src/**/*"
@@ -24,9 +24,9 @@ run-clippy:
     stage: test
     image: rust:latest
     script:
-        - cargo +stable clippy --target-dir=../target --examples --no-default-features --features "tls" -- -D warnings
-        - cargo +stable clippy --target-dir=../target --examples --no-default-features --features "rustls" -- -D warnings
-        - cargo +stable clippy --target-dir=../target --examples --features "proxy" -- -D warnings
+        - cargo clippy --examples --no-default-features --features "tls" -- -D warnings
+        - cargo clippy --examples --no-default-features --features "rustls" -- -D warnings
+        - cargo clippy --examples --features "proxy" -- -D warnings
     only:
         changes:
             - "src/**/*"
@@ -42,7 +42,7 @@ check-docs:
     stage: test
     image: rust:latest
     script:
-        - cargo +stable rustdoc --target-dir=../target -- -D warnings
+        - cargo rustdoc -- -D warnings
     only:
         changes:
             - "src/**/*"
@@ -55,7 +55,7 @@ check-docs:
 run-tests:
     stage: test
     script:
-        - cargo +1.50.0 test --target-dir=../target --features="proxy"
+        - cargo +1.65.0 test --features="proxy"
     only:
         changes:
             - "src/**/*"
@@ -70,7 +70,7 @@ pages:
     stage: docs
     image: rust:latest
     script:
-        - cargo +stable doc --release --no-deps --target-dir=../target
+        - cargo doc --release --no-deps
         - mv ../target/doc ./public
         - mv ./public/tbot/* ./public/
         - cd ./public

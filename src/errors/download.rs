@@ -29,20 +29,18 @@ impl Display for Download {
             ),
             Self::Network(error) => write!(
                 formatter,
-                "A file could not be downloaded because of a network error: {}",
-                error,
+                "A file could not be downloaded because of a network error: \
+                 {error}",
             ),
             Self::InvalidStatusCode(code) => write!(
                 formatter,
                 "A file could not be downloaded because Telegram responded \
-                 with {} instead of 200 OK.",
-                code,
+                 with {code} instead of 200 OK.",
             ),
             Self::Io(error) => write!(
                 formatter,
                 "The server returned a local path to the file, but an error \
-                 occured reading it: {}",
-                error
+                 occured reading it: {error}",
             ),
         }
     }

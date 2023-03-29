@@ -7,7 +7,7 @@ use std::fmt::{self, Formatter, Write};
 pub struct Bold<T>(T);
 
 /// Formats text in bold.
-pub fn bold<T: Formattable>(text: T) -> Bold<T> {
+pub const fn bold<T: Formattable>(text: T) -> Bold<T> {
     Bold(text)
 }
 

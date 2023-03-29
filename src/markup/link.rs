@@ -20,7 +20,7 @@ pub struct Link<T, L = &'static str> {
 }
 
 /// Creates a link.
-pub fn link<T, L>(text: T, link: L) -> Link<T, L>
+pub const fn link<T, L>(text: T, link: L) -> Link<T, L>
 where
     T: Formattable,
     L: Deref<Target = str>,
@@ -32,7 +32,7 @@ where
 }
 
 /// Creates a mention by ID.
-pub fn mention<T: Formattable>(text: T, user: user::Id) -> Link<T> {
+pub const fn mention<T: Formattable>(text: T, user: user::Id) -> Link<T> {
     Link {
         text,
         link: Kind::Mention(user),
@@ -61,7 +61,7 @@ where
                 formatter.write_char(x)
             })?,
             Kind::Mention(user::Id(id)) => {
-                write!(formatter, "tg://user?id={}", id)?
+                write!(formatter, "tg://user?id={id}")?;
             }
         }
         formatter.write_char(')')
@@ -88,7 +88,7 @@ where
                 formatter.write_char(x)
             })?,
             Kind::Mention(user::Id(id)) => {
-                write!(formatter, "tg://user?id={}", id)?
+                write!(formatter, "tg://user?id={id}")?;
             }
         }
 

@@ -20,19 +20,17 @@ impl<C> CodeBlock<C> {
     /// Panics if the language contains a line break or a quote.
     pub fn language(mut self, language: impl Into<String>) -> Self {
         let language = language.into();
-        if language.contains('\n') {
-            panic!(
-                "[tbot] A code block's language may not contain line breaks: {}",
-                &*language,
-            );
-        }
+        assert!(
+            !language.contains('\n'),
+            "[tbot] A code block's language may not contain line breaks: {}",
+            &*language,
+        );
 
-        if language.contains('"') {
-            panic!(
-                "[tbot] A code block's language may not contain quotes: {}",
-                &*language,
-            );
-        }
+        assert!(
+            !language.contains('"'),
+            "[tbot] A code block's language may not contain quotes: {}",
+            &*language,
+        );
 
         self.language = Some(language);
         self
@@ -40,7 +38,7 @@ impl<C> CodeBlock<C> {
 }
 
 /// Formats a block of code.
-pub fn code_block<C>(code: C) -> CodeBlock<C>
+pub const fn code_block<C>(code: C) -> CodeBlock<C>
 where
     C: Deref<Target = str>,
 {
@@ -88,7 +86,7 @@ where
         formatter.write_str("<pre>")?;
 
         if let Some(language) = &self.language {
-            write!(formatter, "<code class=\"language-{}\">", language)?;
+            write!(formatter, "<code class=\"language-{language}\">")?;
         }
 
         html::Formattable::format(&&*self.code, formatter, nesting)?;

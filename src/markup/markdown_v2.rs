@@ -103,7 +103,7 @@ pub struct MarkdownV2<T>(T);
 struct Displayable<T>(MarkdownV2<T>);
 
 /// Creates MarkdownV2 text.
-pub fn markdown_v2<T: Formattable>(content: T) -> MarkdownV2<T> {
+pub const fn markdown_v2<T: Formattable>(content: T) -> MarkdownV2<T> {
     MarkdownV2(content)
 }
 

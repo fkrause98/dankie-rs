@@ -227,8 +227,7 @@ pub fn entities(text: &message::Text) -> Vec<Entity> {
                     last_start = Some(position);
                 }
             }
-            (TokenKind::Start, RawEntityKind::Pre(_))
-            | (TokenKind::Start, RawEntityKind::Code) => {
+            (TokenKind::Start, RawEntityKind::Pre(_) | RawEntityKind::Code) => {
                 if let Some(semantic) = last_semantic.take() {
                     entities.push(Entity::Semantic(semantic));
                 }

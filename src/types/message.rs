@@ -232,16 +232,16 @@ impl<'v> serde::de::Visitor<'v> for MessageVisitor {
                 CHAT => chat = Some(map.next_value()?),
                 FORWARD_FROM => forward_from = Some(map.next_value()?),
                 FORWARD_FROM_CHAT => {
-                    forward_from_chat = Some(map.next_value()?)
+                    forward_from_chat = Some(map.next_value()?);
                 }
                 FORWARD_FROM_MESSAGE_ID => {
-                    forward_from_message_id = Some(map.next_value()?)
+                    forward_from_message_id = Some(map.next_value()?);
                 }
                 FORWARD_SIGNATURE => {
-                    forward_signature = Some(map.next_value()?)
+                    forward_signature = Some(map.next_value()?);
                 }
                 FORWARD_SENDER_NAME => {
-                    forward_sender_name = Some(map.next_value()?)
+                    forward_sender_name = Some(map.next_value()?);
                 }
                 FORWARD_DATE => forward_date = Some(map.next_value()?),
                 REPLY_TO_MESSAGE => reply_to_message = Some(map.next_value()?),
@@ -273,46 +273,48 @@ impl<'v> serde::de::Visitor<'v> for MessageVisitor {
                 DELETE_CHAT_PHOTO => delete_chat_photo = map.next_value()?,
                 GROUP_CHAT_CREATED => group_chat_created = map.next_value()?,
                 SUPERGROUP_CHAT_CREATED => {
-                    supergroup_chat_created = map.next_value()?
+                    supergroup_chat_created = map.next_value()?;
                 }
                 CHANNEL_CHAT_CREATED => {
-                    channel_chat_created = map.next_value()?
+                    channel_chat_created = map.next_value()?;
                 }
                 AUTO_DELETE_TIMER_CHANGED => {
-                    auto_delete_timer_changed = Some(map.next_value()?)
+                    auto_delete_timer_changed = Some(map.next_value()?);
                 }
                 MIGRATE_TO_CHAT_ID => {
-                    migrate_to_chat_id = Some(map.next_value()?)
+                    migrate_to_chat_id = Some(map.next_value()?);
                 }
                 MIGRATE_FROM_CHAT_ID => {
-                    migrate_from_chat_id = Some(map.next_value()?)
+                    migrate_from_chat_id = Some(map.next_value()?);
                 }
                 PINNED_MESSAGE => pinned_message = Some(map.next_value()?),
                 INVOICE => invoice = Some(map.next_value()?),
                 SUCCESSFUL_PAYMENT => {
-                    successful_payment = Some(map.next_value()?)
+                    successful_payment = Some(map.next_value()?);
                 }
                 CONNECTED_WEBSITE => {
-                    connected_website = Some(map.next_value()?)
+                    connected_website = Some(map.next_value()?);
                 }
                 PASSPORT_DATA => passport_data = Some(map.next_value()?),
                 PROXIMITY_ALERT_TRIGGERED => {
-                    proximity_alert = Some(map.next_value()?)
+                    proximity_alert = Some(map.next_value()?);
                 }
                 REPLY_MARKUP => reply_markup = Some(map.next_value()?),
                 VIA_BOT => via_bot = Some(map.next_value()?),
                 VOICE_CHAT_STARTED => {
-                    drop(map.next_value::<IgnoredAny>());
+                    let _ = map.next_value::<IgnoredAny>();
                     voice_chat_started = true;
                 }
                 VOICE_CHAT_PARTICIPANTS_INVITED => {
-                    voice_chat_participants_invited = Some(map.next_value()?)
+                    voice_chat_participants_invited = Some(map.next_value()?);
                 }
                 VOICE_CHAT_ENDED => voice_chat_ended = Some(map.next_value()?),
                 VOICE_CHAT_SCHEDULED => {
-                    voice_chat_scheduled = Some(map.next_value()?)
+                    voice_chat_scheduled = Some(map.next_value()?);
                 }
-                _ => drop(map.next_value::<IgnoredAny>()),
+                _ => {
+                    let _ = map.next_value::<IgnoredAny>();
+                }
             }
         }
 
@@ -350,15 +352,15 @@ impl<'v> serde::de::Visitor<'v> for MessageVisitor {
         };
 
         let caption = Text {
-            value: caption.unwrap_or_else(String::new),
-            entities: caption_entities.unwrap_or_else(Vec::new),
+            value: caption.unwrap_or_default(),
+            entities: caption_entities.unwrap_or_default(),
         };
 
         #[allow(clippy::option_if_let_else)]
         let kind = if let Some(value) = text {
             let text = Text {
                 value,
-                entities: entities.unwrap_or_else(Vec::new),
+                entities: entities.unwrap_or_default(),
             };
 
             Kind::Text(text)

@@ -101,6 +101,7 @@ impl<'v> Visitor<'v> for StickerVisitor {
             }
         }
 
+        #[allow(clippy::option_if_let_else)]
         let kind = if let Some(mask_position) = mask_position {
             Kind::Mask(mask_position)
         } else if is_animated == Some(true) {

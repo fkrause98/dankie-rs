@@ -158,7 +158,7 @@ async fn handle(
     request: Request<Body>,
     updates_url: Arc<String>,
 ) -> Result<Response<Body>, hyper::Error> {
-    if is_request_correct(&request, &*updates_url) {
+    if is_request_correct(&request, &updates_url) {
         let (parts, mut body) = request.into_parts();
         let mut request = parts
             .headers
@@ -173,11 +173,10 @@ async fn handle(
         match serde_json::from_slice(&request[..]) {
             Ok(update) => event_loop.handle_update(update),
             Err(error) => eprintln!(
-                "[tbot] Failed to parse an update: {:?}. `tbot` will skip it, \
-                 but this error means that `tbot`'s type deserialization \
+                "[tbot] Failed to parse an update: {error:?}. `tbot` will skip \
+                 it, but this error means that `tbot`'s type deserialization \
                  doesn't match the Bot API. You should file an issue at \
                  https://gitlab.com/SnejUgal/tbot.",
-                error
             ),
         }
     }

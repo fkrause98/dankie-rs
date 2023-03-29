@@ -3,7 +3,7 @@ use serde::Serialize;
 /// Represents an [`InputContactMessageContent`][docs].
 ///
 /// [docs]: https://core.telegram.org/bots/api#inputcontactmessagecontent
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize)]
 #[must_use]
 pub struct Contact {
     phone_number: String,

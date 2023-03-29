@@ -91,6 +91,7 @@ pub(crate) use inner_bot::InnerBot;
 /// cheaply to share it between tasks.
 ///
 /// [`bot::Builder`]: Builder
+/// [`from_env!`]: crate::from_env!
 #[derive(Debug, Clone)]
 #[must_use]
 pub struct Bot {
@@ -119,6 +120,7 @@ impl Bot {
     /// server, construct a `Bot` using a [`bot::Builder`].
     ///
     /// [`bot::Builder`]: Builder
+    /// [`from_env!`]: crate::from_env!
     ///
     /// # Example
     ///

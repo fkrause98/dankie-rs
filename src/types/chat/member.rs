@@ -199,38 +199,38 @@ impl<'v> Visitor<'v> for MemberVisitor {
                 CAN_BE_EDITED => can_be_edited = Some(map.next_value()?),
                 CAN_CHANGE_INFO => can_change_info = Some(map.next_value()?),
                 CAN_POST_MESSAGES => {
-                    can_post_messages = Some(map.next_value()?)
+                    can_post_messages = Some(map.next_value()?);
                 }
                 CAN_EDIT_MESSAGES => {
-                    can_edit_messages = Some(map.next_value()?)
+                    can_edit_messages = Some(map.next_value()?);
                 }
                 CAN_DELETE_MESSAGES => {
-                    can_delete_messages = Some(map.next_value()?)
+                    can_delete_messages = Some(map.next_value()?);
                 }
                 CAN_INVITE_USERS => can_invite_users = Some(map.next_value()?),
                 CAN_RESTRICT_MEMBERS => {
-                    can_restrict_members = Some(map.next_value()?)
+                    can_restrict_members = Some(map.next_value()?);
                 }
                 CAN_PIN_MESSAGES => can_pin_messages = Some(map.next_value()?),
                 CAN_PROMOTE_MEMBERS => {
-                    can_promote_members = Some(map.next_value()?)
+                    can_promote_members = Some(map.next_value()?);
                 }
                 IS_MEMBER => is_member = Some(map.next_value()?),
                 CAN_SEND_MESSAGES => {
-                    can_send_messages = Some(map.next_value()?)
+                    can_send_messages = Some(map.next_value()?);
                 }
                 CAN_SEND_MEDIA_MESSAGES => {
-                    can_send_media_messages = Some(map.next_value()?)
+                    can_send_media_messages = Some(map.next_value()?);
                 }
                 CAN_SEND_OTHER_MESSAGES => {
-                    can_send_other_messages = Some(map.next_value()?)
+                    can_send_other_messages = Some(map.next_value()?);
                 }
                 CAN_SEND_POLLS => can_send_polls = Some(map.next_value()?),
                 CAN_ADD_WEB_PAGE_PREVIEWS => {
-                    can_add_web_page_previews = Some(map.next_value()?)
+                    can_add_web_page_previews = Some(map.next_value()?);
                 }
                 CAN_MANAGE_VOICE_CHATS => {
-                    can_manage_voice_chats = Some(map.next_value()?)
+                    can_manage_voice_chats = Some(map.next_value()?);
                 }
                 IS_ANONYMOUS => is_anonymous = Some(map.next_value()?),
                 _ => {

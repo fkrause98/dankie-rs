@@ -7,7 +7,7 @@ use std::fmt::{self, Formatter};
 pub struct Italic<T>(T);
 
 /// Formats text in italic.
-pub fn italic<T: Formattable>(text: T) -> Italic<T> {
+pub const fn italic<T: Formattable>(text: T) -> Italic<T> {
     Italic(text)
 }
 

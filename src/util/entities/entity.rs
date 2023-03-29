@@ -144,13 +144,15 @@ impl markdown_v2::Formattable for SemanticEntity {
     ) -> std::fmt::Result {
         match &self.kind {
             None
-            | Some(Kind::Mention)
-            | Some(Kind::Hashtag)
-            | Some(Kind::Cashtag)
-            | Some(Kind::BotCommand)
-            | Some(Kind::Url)
-            | Some(Kind::Email)
-            | Some(Kind::PhoneNumber) => markdown_v2::Formattable::format(
+            | Some(
+                Kind::Mention
+                | Kind::Hashtag
+                | Kind::Cashtag
+                | Kind::BotCommand
+                | Kind::Url
+                | Kind::Email
+                | Kind::PhoneNumber,
+            ) => markdown_v2::Formattable::format(
                 &to_formattable(&self.value),
                 formatter,
                 nesting,
@@ -177,13 +179,15 @@ impl html::Formattable for SemanticEntity {
     ) -> std::fmt::Result {
         match &self.kind {
             None
-            | Some(Kind::Mention)
-            | Some(Kind::Hashtag)
-            | Some(Kind::Cashtag)
-            | Some(Kind::BotCommand)
-            | Some(Kind::Url)
-            | Some(Kind::Email)
-            | Some(Kind::PhoneNumber) => html::Formattable::format(
+            | Some(
+                Kind::Mention
+                | Kind::Hashtag
+                | Kind::Cashtag
+                | Kind::BotCommand
+                | Kind::Url
+                | Kind::Email
+                | Kind::PhoneNumber,
+            ) => html::Formattable::format(
                 &to_formattable(&self.value),
                 formatter,
                 nesting,

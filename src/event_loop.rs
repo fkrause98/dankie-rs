@@ -143,9 +143,8 @@ impl EventLoop {
 
     #[allow(clippy::needless_pass_by_value)]
     fn handle<C: Context>(&self, context: Arc<C>) {
-        let handlers = match self.update_handlers.get::<Handlers<C>>() {
-            Some(handlers) => handlers,
-            None => return,
+        let Some(handlers) = self.update_handlers.get::<Handlers<C>>() else {
+            return;
         };
 
         handlers
@@ -597,23 +596,9 @@ impl EventLoop {
                     self.handle_unhandled(update);
                 }
                 Query {
-                    kind: callback::Kind::Data(..),
-                    origin: callback::Origin::Message(..),
-                    ..
-                }
-                | Query {
-                    kind: callback::Kind::Data(..),
-                    origin: callback::Origin::Inline(..),
-                    ..
-                }
-                | Query {
-                    kind: callback::Kind::Game(..),
-                    origin: callback::Origin::Message(..),
-                    ..
-                }
-                | Query {
-                    kind: callback::Kind::Game(..),
-                    origin: callback::Origin::Inline(..),
+                    kind: callback::Kind::Data(..) | callback::Kind::Game(..),
+                    origin:
+                        callback::Origin::Message(..) | callback::Origin::Inline(..),
                     ..
                 } => (),
             },
@@ -952,7 +937,7 @@ impl EventLoop {
             }
             message::Kind::SupergroupCreated
             | message::Kind::ChannelCreated => {
-                warn!("Update not expected; skipping it")
+                warn!("Update not expected; skipping it");
             }
             kind if self.will_handle::<Unhandled>() => {
                 let message = Message::new(data, kind);
@@ -999,9 +984,7 @@ impl EventLoop {
     #[allow(clippy::too_many_lines, clippy::cognitive_complexity)] // can't split the huge match
     fn handle_message_edit_update(&self, message: types::Message) {
         let (data, kind) = message.split();
-        let edit_date = if let Some(edit_date) = data.edit_date {
-            edit_date
-        } else {
+        let Some(edit_date) = data.edit_date else {
             error!("No `edit_date` on an edited message; skipping it");
             return;
         };
@@ -1155,7 +1138,7 @@ impl EventLoop {
             kind if self.will_handle::<Unhandled>() => {
                 let message = Message::new(data, kind);
                 let update = update::Kind::EditedMessage(message);
-                self.handle_unhandled(update)
+                self.handle_unhandled(update);
             }
             message::Kind::Animation { .. }
             | message::Kind::Audio { .. }
@@ -1239,12 +1222,14 @@ fn trim_command(text: message::Text) -> message::Text {
 }
 
 fn normalize_cmd_name(command: &str) -> &str {
-    if command.starts_with('/') {
+    // Putting side effects into functional combinators doesn't look very good.
+    #[allow(clippy::option_if_let_else)]
+    if let Some(stripped) = command.strip_prefix('/') {
         tracing::warn!(
             ?command,
             "Commands should not start with `/`. `tbot` will strip it, but it is idiomatic to omit it in the source code.",
         );
-        &command[1..]
+        stripped
     } else {
         command
     }

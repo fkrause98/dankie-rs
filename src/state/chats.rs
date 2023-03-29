@@ -172,17 +172,17 @@ impl<S> Chats<S> {
 
     /// Clears the store.
     pub fn clear(&mut self) {
-        self.chats.clear()
+        self.chats.clear();
     }
 
     /// Reserves capacity for `n` additional chats.
     pub fn reserve(&mut self, additional: usize) {
-        self.chats.reserve(additional)
+        self.chats.reserve(additional);
     }
 
     /// Shrinks the storage to already stored chats.
     pub fn shrink_to_fit(&mut self) {
-        self.chats.shrink_to_fit()
+        self.chats.shrink_to_fit();
     }
 
     /// Gets a chat's state by its ID.
@@ -279,7 +279,7 @@ impl<S> Chats<S> {
     where
         P: FnMut(chat::Id, &mut S) -> bool,
     {
-        self.chats.retain(|&id, state| predicate(id, state))
+        self.chats.retain(|&id, state| predicate(id, state));
     }
 }
 
@@ -334,7 +334,7 @@ impl<'a, S> IntoIterator for &'a mut Chats<S> {
 
 impl<S> Extend<(chat::Id, S)> for Chats<S> {
     fn extend<I: IntoIterator<Item = (chat::Id, S)>>(&mut self, iterator: I) {
-        self.chats.extend(iterator)
+        self.chats.extend(iterator);
     }
 }
 
@@ -343,7 +343,7 @@ impl<'a, S: Copy> Extend<(chat::Id, &'a S)> for Chats<S> {
         &mut self,
         iterator: I,
     ) {
-        self.extend(iterator.into_iter().map(|(id, &state)| (id, state)))
+        self.extend(iterator.into_iter().map(|(id, &state)| (id, state)));
     }
 }
 

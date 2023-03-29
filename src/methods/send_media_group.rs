@@ -99,7 +99,7 @@ impl SendMediaGroup<'_> {
                     media: InputFile::File { filename, bytes },
                     ..
                 }) => {
-                    let name = format!("photo_{}", index);
+                    let name = format!("photo_{index}");
 
                     multipart =
                         multipart.file_owned_name(name, filename, bytes);
@@ -109,7 +109,7 @@ impl SendMediaGroup<'_> {
                     thumb,
                     ..
                 }) => {
-                    let name = format!("video_{}", index);
+                    let name = format!("video_{index}");
                     multipart =
                         multipart.file_owned_name(name, filename, bytes);
 
@@ -120,7 +120,7 @@ impl SendMediaGroup<'_> {
                     thumb,
                     ..
                 }) => {
-                    let name = format!("audio_{}", index);
+                    let name = format!("audio_{index}");
                     multipart =
                         multipart.file_owned_name(name, filename, bytes);
 
@@ -131,7 +131,7 @@ impl SendMediaGroup<'_> {
                     thumb,
                     ..
                 }) => {
-                    let name = format!("document_{}", index);
+                    let name = format!("document_{index}");
                     multipart =
                         multipart.file_owned_name(name, filename, bytes);
 
