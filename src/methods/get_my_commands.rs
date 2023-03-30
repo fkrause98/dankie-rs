@@ -18,6 +18,8 @@ pub struct GetMyCommands<'a> {
     #[serde(skip)]
     bot: &'a InnerBot,
     scope: Scope,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    language_code: Option<String>,
 }
 
 impl<'a> GetMyCommands<'a> {
@@ -25,6 +27,7 @@ impl<'a> GetMyCommands<'a> {
         Self {
             bot,
             scope: Scope::Default,
+            language_code: None,
         }
     }
 
@@ -33,6 +36,13 @@ impl<'a> GetMyCommands<'a> {
     #[allow(clippy::missing_const_for_fn)]
     pub fn scope(mut self, scope: Scope) -> Self {
         self.scope = scope;
+        self
+    }
+
+    /// Configures the langauge of the dedicated command that you want to
+    /// retrieve. Reflects the `language_code` parameter.
+    pub fn language_code(mut self, language_code: impl Into<String>) -> Self {
+        self.language_code = Some(language_code.into());
         self
     }
 }
