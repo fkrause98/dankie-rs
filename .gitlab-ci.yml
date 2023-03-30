@@ -71,11 +71,8 @@ pages:
     image: rust:latest
     script:
         - cargo doc --release --no-deps
-        - mv ../target/doc ./public
-        - mv ./public/tbot/* ./public/
-        - cd ./public
-        - grep -rl "../tbot" * | while read f; do sed -i -e 's#\.\./tbot/#\.\./#g' "$f"; done
-        - sed -i 's#return\[displayPath,href\]#return\[displayPath,href.replace("\.\./tbot/", "\.\./")\]#g' main.js
+        - mv ./target/doc ./public
+        - echo '<meta http-equiv="refresh" content="0; url=https://docs.tbot.rs/tbot/">' > ./public/index.html
     artifacts:
         paths:
             - public
