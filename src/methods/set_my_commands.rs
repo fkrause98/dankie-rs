@@ -35,7 +35,7 @@ impl<'a> SetMyCommands<'a> {
         }
     }
 
-    /// The scope for which the list of bot commands is applied.
+    /// Speicifies the scope for which the list of bot commands is applied.
     /// Reflects the `scope` parameter.
     #[allow(clippy::missing_const_for_fn)]
     pub fn scope(mut self, scope: Scope) -> Self {

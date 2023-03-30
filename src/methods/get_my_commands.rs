@@ -31,7 +31,7 @@ impl<'a> GetMyCommands<'a> {
         }
     }
 
-    /// Specifies the scope of the dedicated command list that you want to
+    /// Configures the scope of the dedicated command list that you want to
     /// retrive. Reflects the `scope` parameter.
     #[allow(clippy::missing_const_for_fn)]
     pub fn scope(mut self, scope: Scope) -> Self {
