@@ -268,6 +268,11 @@ impl Bot {
         DeleteMessage::new(&self.inner, chat_id, message_id)
     }
 
+    /// Deletes the list of the bot's commands.
+    pub fn delete_my_commands(&self) -> DeleteMyCommands<'_> {
+        DeleteMyCommands::new(&self.inner)
+    }
+
     /// Deletes a sticker from a sticker set.
     pub fn delete_sticker_from_set(
         &self,
