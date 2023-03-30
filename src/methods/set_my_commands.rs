@@ -1,5 +1,9 @@
 use super::call_method;
-use crate::{bot::InnerBot, errors, types::BotCommand};
+use crate::{
+    bot::InnerBot,
+    errors,
+    types::{bot_command::Scope, BotCommand},
+};
 use serde::Serialize;
 
 /// Sets the list of the bot's commands.
@@ -13,6 +17,9 @@ pub struct SetMyCommands<'a> {
     #[serde(skip)]
     bot: &'a InnerBot,
     commands: Vec<BotCommand>,
+    scope: Scope,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    language_code: Option<String>,
 }
 
 impl<'a> SetMyCommands<'a> {
@@ -23,7 +30,24 @@ impl<'a> SetMyCommands<'a> {
         Self {
             bot,
             commands: commands.into(),
+            scope: Scope::default(),
+            language_code: None,
         }
+    }
+
+    /// Speicifies the scope for which the list of bot commands is applied.
+    /// Reflects the `scope` parameter.
+    #[allow(clippy::missing_const_for_fn)]
+    pub fn scope(mut self, scope: Scope) -> Self {
+        self.scope = scope;
+        self
+    }
+
+    /// Specifies the language for this list of bot commands.
+    /// Reflects the `language_code` parameter.
+    pub fn language_code(mut self, language_code: impl Into<String>) -> Self {
+        self.language_code = Some(language_code.into());
+        self
     }
 }
 

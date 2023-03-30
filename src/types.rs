@@ -4,7 +4,7 @@
 
 mod animation;
 mod audio;
-mod bot_command;
+pub mod bot_command;
 pub mod callback;
 pub mod chat;
 mod chosen_inline_result;

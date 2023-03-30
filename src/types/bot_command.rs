@@ -1,4 +1,10 @@
+//! Types related to bot commands menu.
+
 use serde::{Deserialize, Serialize};
+
+mod scope;
+
+pub use scope::Scope;
 
 /// Represents a [`BotCommand`][docs].
 ///

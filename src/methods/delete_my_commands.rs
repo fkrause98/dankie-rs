@@ -1,20 +1,16 @@
 use serde::Serialize;
 
 use super::call_method;
-use crate::{
-    bot::InnerBot,
-    errors,
-    types::{bot_command::Scope, BotCommand},
-};
+use crate::{bot::InnerBot, errors, types::bot_command::Scope};
 
-/// Gets the list of the bot's commands.
+/// Deletes the list of the bot's commands.
 ///
-/// Represents the [`getMyCommands`][docs] method.
+/// Represents the [`deleteMyCommands`][docs] method.
 ///
-/// [docs]: https://core.telegram.org/bots/api#getmycommands
+/// [docs]: https://core.telegram.org/bots/api#deletemycommands
 #[derive(Debug, Clone, Serialize)]
 #[must_use = "methods do nothing unless turned into a future"]
-pub struct GetMyCommands<'a> {
+pub struct DeleteMyCommands<'a> {
     #[serde(skip)]
     bot: &'a InnerBot,
     scope: Scope,
@@ -22,7 +18,7 @@ pub struct GetMyCommands<'a> {
     language_code: Option<String>,
 }
 
-impl<'a> GetMyCommands<'a> {
+impl<'a> DeleteMyCommands<'a> {
     pub(crate) const fn new(bot: &'a InnerBot) -> Self {
         Self {
             bot,
@@ -32,7 +28,7 @@ impl<'a> GetMyCommands<'a> {
     }
 
     /// Configures the scope of the dedicated command list that you want to
-    /// retrive. Reflects the `scope` parameter.
+    /// delete. Reflects the `scope` parameter.
     #[allow(clippy::missing_const_for_fn)]
     pub fn scope(mut self, scope: Scope) -> Self {
         self.scope = scope;
@@ -40,22 +36,24 @@ impl<'a> GetMyCommands<'a> {
     }
 
     /// Configures the langauge of the dedicated command that you want to
-    /// retrieve. Reflects the `language_code` parameter.
+    /// delete. Reflects the `language_code` parameter.
     pub fn language_code(mut self, language_code: impl Into<String>) -> Self {
         self.language_code = Some(language_code.into());
         self
     }
 }
 
-impl GetMyCommands<'_> {
+impl DeleteMyCommands<'_> {
     /// Calls the method.
-    pub async fn call(self) -> Result<Vec<BotCommand>, errors::MethodCall> {
-        call_method(
+    pub async fn call(self) -> Result<(), errors::MethodCall> {
+        call_method::<bool>(
             self.bot,
-            "getMyCommands",
+            "deleteMyCommands",
             None,
             serde_json::to_vec(&self).unwrap(),
         )
-        .await
+        .await?;
+
+        Ok(())
     }
 }
