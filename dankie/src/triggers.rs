@@ -5,7 +5,7 @@ use crate::{Bot, BotCommand, TxtMsg, DB};
 use anyhow::Result;
 use regex::Regex;
 use sea_orm::prelude::*;
-use sea_orm::{ActiveModelTrait, Set};
+use sea_orm::Set;
 use std::ops::Deref;
 use tbot::contexts::methods::Message;
 pub async fn fetch_regexes() -> Result<Vec<String>> {
@@ -25,10 +25,12 @@ impl Triggers {
         let trigger = global_regex::ActiveModel {
             regexp: Set(context.text.value.clone()),
         };
-        let response = {
+
+        let response = match trigger.insert(DB.deref()).await {
             Ok(_) => "Trigger añadido con exito",
             _ => "No se pudo añadir, revisá que no exista ya master",
         };
+
         context.send_message(response).call().await.unwrap();
     }
     pub async fn listar_triggers(context: BotCommand) {
