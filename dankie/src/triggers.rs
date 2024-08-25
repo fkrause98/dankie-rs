@@ -20,18 +20,18 @@ pub async fn fetch_regexes() -> Result<Vec<String>> {
 pub struct Triggers;
 impl Triggers {
     pub async fn agregar_trigger(context: BotCommand) {
+        // FIXME: Comprobar que la regex sea valida con:
+        // Regex::new(input).is_some()
         let trigger = global_regex::ActiveModel {
             regexp: Set(context.text.value.clone()),
         };
-        let response = match trigger.insert(DB.deref()).await {
+        let response = {
             Ok(_) => "Trigger añadido con exito",
             _ => "No se pudo añadir, revisá que no exista ya master",
         };
         context.send_message(response).call().await.unwrap();
     }
     pub async fn listar_triggers(context: BotCommand) {
-        // FIXME: Comprobar que la regex sea valida con:
-        // Regex::new(input).is_some()
         let response = fetch_regexes().await.unwrap().join("\n");
         context.send_message(response).call().await.unwrap();
     }
