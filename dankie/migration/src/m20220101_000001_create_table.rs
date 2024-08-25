@@ -40,7 +40,14 @@ impl MigrationTrait for Migration {
                     .table(GlobalRegex::Table)
                     .if_not_exists()
                     .col(ColumnDef::new(GlobalRegex::Regexp).text().not_null())
-                    .col(ColumnDef::new(Chat::Id).text().not_null())
+                    .col(
+                        ColumnDef::new(GlobalRegex::Id)
+                            .big_integer()
+                            .not_null()
+                            .primary_key()
+                            .text()
+                            .not_null(),
+                    )
                     .to_owned(),
             )
             .await?;
