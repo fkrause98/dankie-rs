@@ -1,11 +1,11 @@
 use crate::entities::global_regex;
 use crate::entities::prelude::GlobalRegex;
 use crate::module::Module;
-use crate::{Bot, BotCommand, TxtMsg, DB};
+use crate::{Bot, BotCommand, DB};
 use anyhow::Result;
-use regex::Regex;
+use regex::{Regex, RegexSet};
 use sea_orm::prelude::*;
-use sea_orm::Set;
+use sea_orm::{NotSet, Set};
 use std::ops::Deref;
 use tbot::contexts::methods::Message;
 pub async fn fetch_regexes() -> Result<Vec<String>> {
@@ -19,33 +19,38 @@ pub async fn fetch_regexes() -> Result<Vec<String>> {
 #[derive(Copy, Clone, Debug)]
 pub struct Triggers;
 impl Triggers {
-    pub async fn agregar_trigger(context: BotCommand) {
-        // FIXME: Comprobar que la regex sea valida con:
-        // Regex::new(input).is_some()
+    fn regex_valida(txt: &str) -> bool {
+        Regex::new(txt).is_ok()
+    }
+    pub async fn agregar_trigger(context: BotCommand) -> Result<String, String> {
+        // Chequear que la regex sea válida.
+        let _ = Regex::new(&context.text.value).map_err(|err| err.to_string());
+        // Cambios para la db
         let trigger = global_regex::ActiveModel {
             regexp: Set(context.text.value.clone()),
+            ..Default::default()
         };
+        // Insertar los cambios.
+        let db_res = trigger.insert(DB.deref()).await;
 
-        let response = match trigger.insert(DB.deref()).await {
+        let response = match dbg!(db_res) {
             Ok(_) => "Trigger añadido con exito",
-            _ => "No se pudo añadir, revisá que no exista ya master",
+            Err(_) => "No se pudo añadir, revisá que no exista ya master",
         };
-
-        context.send_message(response).call().await.unwrap();
+        Ok(response.to_string())
     }
     pub async fn listar_triggers(context: BotCommand) {
         let response = fetch_regexes().await.unwrap().join("\n");
         context.send_message(response).call().await.unwrap();
     }
-    pub async fn match_con_mensaje(txt: TxtMsg) {
-        let captures = fetch_regexes()
-            .await
-            .unwrap()
-            .into_iter()
-            .map(|r| Regex::new(&r).unwrap())
-            .filter_map(|reg| reg.captures(&txt.text.value))
-            .collect::<Vec<_>>();
-        log::debug!("Matched captures: {:?}", captures);
+    pub async fn match_con_mensaje(txt: &str) -> Vec<String> {
+        let regexes = fetch_regexes().await.unwrap();
+        let set = RegexSet::new(regexes.iter()).unwrap();
+        let matching_regexes: Vec<_> = set.matches(txt).into_iter().collect();
+        matching_regexes
+            .iter()
+            .map(|&index| regexes[index].clone())
+            .collect()
     }
 }
 impl Module for Triggers {
@@ -53,13 +58,27 @@ impl Module for Triggers {
         bot.command_with_description(
             "agregar",
             "Agrega un trigger a la lista de triggers globales",
-            Triggers::agregar_trigger,
+            |context| async move {
+                let response = match dbg!(Triggers::agregar_trigger(context.clone()).await) {
+                    Ok(success) => success,
+                    Err(err_msg) => err_msg,
+                };
+                context.send_message(response).call().await.unwrap();
+            },
         );
         bot.command_with_description(
             "listar",
             "Listar los triggers globales conocidos",
             Triggers::listar_triggers,
         );
-        bot.text(Triggers::match_con_mensaje);
+        bot.text(|context| async move {
+            let input = &context.text.value;
+            let matches = Triggers::match_con_mensaje(&input).await;
+            context
+                .send_message(matches.join("\n"))
+                .call()
+                .await
+                .unwrap();
+        })
     }
 }

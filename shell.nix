@@ -15,6 +15,7 @@ pkgs.mkShell {
     ];
   RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
   shellHook = ''
+   export RUST_LOG="debug"
    cargo install diesel_cli --no-default-features --features postgres
 '';
 }
