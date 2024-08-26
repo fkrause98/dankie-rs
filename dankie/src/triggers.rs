@@ -21,7 +21,7 @@ pub struct Triggers;
 impl Triggers {
     pub async fn agregar_trigger(context: BotCommand) -> Result<String, String> {
         // Chequear que la regex sea válida.
-        let _ = Regex::new(&context.text.value).map_err(|err| err.to_string());
+        let re = Regex::new(&context.text.value).map_err(|err| err.to_string())?;
         // Cambios para la db
         let trigger = global_regex::ActiveModel {
             regexp: Set(context.text.value.clone()),
@@ -59,7 +59,9 @@ impl Module for Triggers {
             |context| async move {
                 let response = match Triggers::agregar_trigger(context.clone()).await {
                     Ok(success) => success,
-                    Err(err_msg) => err_msg,
+                    Err(err_msg) => {
+                        format!("Wachin, hubo un error con tu regex: \n {}", err_msg)
+                    }
                 };
                 context.send_message(response).call().await.unwrap();
             },
