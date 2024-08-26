@@ -19,9 +19,6 @@ pub async fn fetch_regexes() -> Result<Vec<String>> {
 #[derive(Copy, Clone, Debug)]
 pub struct Triggers;
 impl Triggers {
-    fn regex_valida(txt: &str) -> bool {
-        Regex::new(txt).is_ok()
-    }
     pub async fn agregar_trigger(context: BotCommand) -> Result<String, String> {
         // Chequear que la regex sea válida.
         let _ = Regex::new(&context.text.value).map_err(|err| err.to_string());
@@ -37,6 +34,7 @@ impl Triggers {
             Ok(_) => "Trigger añadido con exito",
             Err(_) => "No se pudo añadir, revisá que no exista ya master",
         };
+
         Ok(response.to_string())
     }
     pub async fn listar_triggers(context: BotCommand) {
@@ -59,7 +57,7 @@ impl Module for Triggers {
             "agregar",
             "Agrega un trigger a la lista de triggers globales",
             |context| async move {
-                let response = match dbg!(Triggers::agregar_trigger(context.clone()).await) {
+                let response = match Triggers::agregar_trigger(context.clone()).await {
                     Ok(success) => success,
                     Err(err_msg) => err_msg,
                 };

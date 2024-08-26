@@ -43,9 +43,8 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(GlobalRegex::Id)
                             .big_integer()
-                            .not_null()
                             .primary_key()
-                            .text()
+                            .auto_increment()
                             .not_null(),
                     )
                     .to_owned(),
