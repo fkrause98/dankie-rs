@@ -9,12 +9,11 @@ use sea_orm::{NotSet, Set};
 use std::ops::Deref;
 use tbot::contexts::methods::Message;
 use tbot::types::parameters::ImplicitChatId;
-pub async fn fetch_regexes() -> Result<Vec<String>> {
+pub async fn fetch_regexes() -> Result<Vec<global_regex::Model>> {
     Ok(GlobalRegex::find()
         .all(DB.deref())
         .await?
         .into_iter()
-        .map(|r| r.regexp.to_string())
         .collect())
 }
 #[derive(Copy, Clone, Debug)]
@@ -45,21 +44,21 @@ impl Triggers {
         Ok(response.to_string())
     }
     pub async fn listar_triggers(context: BotCommand) {
-        let response = fetch_regexes().await.unwrap().join("\n");
-        context.send_message(response).call().await.unwrap();
+        // let response = fetch_regexes().await.unwrap().into_iter().map(|r| r.regexp.to_string()).join("\n");
+        // let response = fetch_regexes().await?.into_iter().map(|r| r.regexp.to_string()).fold("Triggers: ", |cur, nxt| cur + '\n' + nxt);
+        context.send_message("").call().await.unwrap();
     }
-    pub async fn match_con_mensaje(txt: &str) -> Vec<String> {
+    pub async fn match_con_mensaje(txt: &str) -> Vec<global_regex::Model> {
         let regexes = fetch_regexes().await.unwrap();
-        let set = RegexSet::new(regexes.iter()).unwrap();
+        let set = RegexSet::new(regexes.iter().map(|r| &r.regexp)).unwrap();
         let matching_regexes: Vec<_> = set.matches(txt).into_iter().collect();
         matching_regexes
             .iter()
             .map(|&index| regexes[index].clone())
             .collect()
     }
-    pub async fn recuperar_un_trigger(trigger: &str) -> Option<global_regex::Model> {
-        GlobalRegex::find()
-            .filter(global_regex::Column::Regexp.contains(trigger))
+    pub async fn recuperar_un_trigger(id: i64) -> Option<global_regex::Model> {
+        GlobalRegex::find_by_id(id)
             .one(DB.deref())
             .await
             .ok()?
@@ -94,7 +93,7 @@ impl Module for Triggers {
                 let matches = Triggers::match_con_mensaje(&input).await;
                 if matches.len() > 0 {
                     context
-                        .send_message(format!("Triggers que matchean: \n {}", matches.join("\n")))
+                        .send_message(format!("Triggers que matchean: \n "))
                         .call()
                         .await
                         .unwrap();
@@ -105,7 +104,7 @@ impl Module for Triggers {
             let input = &context.text.value;
             let matches = Triggers::match_con_mensaje(&input).await;
             if let Some(trigger) = matches.first() {
-                if let Some(r) = Triggers::recuperar_un_trigger(trigger).await {
+                if let Some(r) = Triggers::recuperar_un_trigger(trigger.id).await {
                     let chat_id = tbot::types::chat::Id(r.chat_id);
                     let msg_id = tbot::types::message::Id(r.msg_id as u32);
                     context.forward_here(chat_id, msg_id).call().await;
