@@ -44,9 +44,9 @@ impl Triggers {
         Ok(response.to_string())
     }
     pub async fn listar_triggers(context: BotCommand) {
-        // let response = fetch_regexes().await.unwrap().into_iter().map(|r| r.regexp.to_string()).join("\n");
-        // let response = fetch_regexes().await?.into_iter().map(|r| r.regexp.to_string()).fold("Triggers: ", |cur, nxt| cur + '\n' + nxt);
-        context.send_message("").call().await.unwrap();
+        let regexes: Vec<String> = fetch_regexes().await.unwrap().into_iter().map(|r| r.regexp).collect();
+        let response = format!("Triggers conocidos: \n {}", regexes.join(""));
+        context.send_message(response).call().await.unwrap();
     }
     pub async fn match_con_mensaje(txt: &str) -> Vec<global_regex::Model> {
         let regexes = fetch_regexes().await.unwrap();
@@ -109,8 +109,7 @@ impl Module for Triggers {
                     let msg_id = tbot::types::message::Id(r.msg_id as u32);
                     context.forward_here(chat_id, msg_id).call().await;
                 }
-            } else {
-            }
+            } else {}
         })
     }
 }
