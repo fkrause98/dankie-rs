@@ -45,7 +45,7 @@ impl Triggers {
     }
     pub async fn listar_triggers(context: BotCommand) {
         let regexes: Vec<String> = fetch_regexes().await.unwrap().into_iter().map(|r| r.regexp).collect();
-        let response = format!("Triggers conocidos: \n {}", regexes.join(""));
+        let response = format!("Triggers conocidos: \n {}", regexes.join("\n"));
         context.send_message(response).call().await.unwrap();
     }
     pub async fn match_con_mensaje(txt: &str) -> Vec<global_regex::Model> {
