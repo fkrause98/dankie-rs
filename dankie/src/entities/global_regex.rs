@@ -9,6 +9,8 @@ pub struct Model {
     pub regexp: String,
     #[sea_orm(primary_key)]
     pub id: i64,
+    pub msg_id: i64,
+    pub chat_id: i64,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

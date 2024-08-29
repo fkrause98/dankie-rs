@@ -13,6 +13,8 @@ pub enum GlobalRegex {
     Table,
     Id,
     Regexp,
+    MsgId,
+    ChatId,
 }
 
 #[async_trait::async_trait]
@@ -47,6 +49,8 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .not_null(),
                     )
+                    .col(ColumnDef::new(GlobalRegex::MsgId).big_integer().not_null())
+                    .col(ColumnDef::new(GlobalRegex::ChatId).big_integer().not_null())
                     .to_owned(),
             )
             .await?;
@@ -56,6 +60,9 @@ impl MigrationTrait for Migration {
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .drop_table(Table::drop().table(Chat::Table).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(GlobalRegex::Table).to_owned())
             .await
     }
 }
