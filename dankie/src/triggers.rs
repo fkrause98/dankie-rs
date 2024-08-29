@@ -52,19 +52,17 @@ impl Triggers {
         let regexes = fetch_regexes().await.unwrap();
         let set = RegexSet::new(regexes.iter()).unwrap();
         let matching_regexes: Vec<_> = set.matches(txt).into_iter().collect();
-        dbg!(&matching_regexes);
         matching_regexes
             .iter()
             .map(|&index| regexes[index].clone())
             .collect()
     }
     pub async fn recuperar_un_trigger(trigger: &str) -> Option<global_regex::Model> {
-        dbg!(trigger);
-        dbg!(GlobalRegex::find()
+        GlobalRegex::find()
             .filter(global_regex::Column::Regexp.contains(trigger))
             .one(DB.deref())
             .await
-            .ok()?)
+            .ok()?
     }
 }
 impl Module for Triggers {
@@ -107,13 +105,11 @@ impl Module for Triggers {
             let input = &context.text.value;
             let matches = Triggers::match_con_mensaje(&input).await;
             if let Some(trigger) = matches.first() {
-                dbg!(
-                    if let Some(r) = dbg!(Triggers::recuperar_un_trigger(trigger).await) {
-                        let chat_id = tbot::types::chat::Id(r.chat_id);
-                        let msg_id = tbot::types::message::Id(r.msg_id as u32);
-                        context.forward_here(chat_id, msg_id).call().await;
-                    }
-                )
+                if let Some(r) = Triggers::recuperar_un_trigger(trigger).await {
+                    let chat_id = tbot::types::chat::Id(r.chat_id);
+                    let msg_id = tbot::types::message::Id(r.msg_id as u32);
+                    context.forward_here(chat_id, msg_id).call().await;
+                }
             } else {
             }
         })
