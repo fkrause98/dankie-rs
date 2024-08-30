@@ -16,15 +16,31 @@ pub async fn fetch_regexes() -> Result<Vec<global_regex::Model>> {
         .into_iter()
         .collect())
 }
+
+use thiserror::Error;
+use TriggerError::*;
+
+#[derive(Error, Debug)]
+pub enum TriggerError {
+    #[error("Tenes que responder a algo pa")]
+    NoSelectedReply,
+    #[error("Flaco, pasame bien la regex, me bardea el compilador \n: {0} ")]
+    InvalidRegex(#[from] regex::Error),
+    #[error("No se pudo añadir, revisá que no exista ya master")]
+    GenericErr,
+    #[error("No matchea ninguna man")]
+    NoMatch,
+}
+
 #[derive(Copy, Clone, Debug)]
 pub struct Triggers;
 impl Triggers {
-    pub async fn agregar_trigger(context: BotCommand) -> Result<String, String> {
+    pub async fn agregar_trigger(context: BotCommand) -> Result<(), TriggerError> {
         let Some(trigger_msg) = &context.reply_to else {
-            return Err("Tenés que responder a algo, bro".to_string());
+            return Err(NoSelectedReply);
         };
         // Chequear que la regex sea válida.
-        let _ = Regex::new(&context.text.value).map_err(|err| err.to_string())?;
+        let _ = Regex::new(&context.text.value).map_err(|err| InvalidRegex(err))?;
         // Cambios para la db
         let trigger = global_regex::ActiveModel {
             regexp: Set(context.text.value.clone()),
@@ -33,29 +49,23 @@ impl Triggers {
             msg_id: Set(trigger_msg.id.0 as i64),
             ..Default::default()
         };
-        // Insertar los cambios.
-        let db_res = trigger.insert(DB.deref()).await;
-
-        let response = match db_res {
-            Ok(_) => "Trigger añadido con exito",
-            Err(_) => "No se pudo añadir, revisá que no exista ya master",
-        };
-
-        Ok(response.to_string())
+        // Insertar los cambios, y si no early return.
+        let _ = trigger.insert(DB.deref()).await.map_err(|_| GenericErr)?;
+        Ok(())
     }
     pub async fn listar_triggers(context: BotCommand) {
         let regexes: Vec<String> = fetch_regexes().await.unwrap().into_iter().map(|r| r.regexp).collect();
         let response = format!("Triggers conocidos: \n {}", regexes.join("\n"));
         context.send_message(response).call().await.unwrap();
     }
-    pub async fn match_con_mensaje(txt: &str) -> Vec<global_regex::Model> {
-        let regexes = fetch_regexes().await.unwrap();
+    pub async fn match_con_mensaje(txt: &str) -> Result<Vec<global_regex::Model>, TriggerError> {
+        let regexes = fetch_regexes().await.map_err(|_| TriggerError::NoMatch)?;
         let set = RegexSet::new(regexes.iter().map(|r| &r.regexp)).unwrap();
         let matching_regexes: Vec<_> = set.matches(txt).into_iter().collect();
-        matching_regexes
+        Ok(matching_regexes
             .iter()
             .map(|&index| regexes[index].clone())
-            .collect()
+            .collect())
     }
     pub async fn recuperar_un_trigger(id: i64) -> Option<global_regex::Model> {
         GlobalRegex::find_by_id(id)
@@ -72,10 +82,8 @@ impl Module for Triggers {
             |context| async move {
                 // Comprobar que agregar sea en base a una respuesta
                 let response = match Triggers::agregar_trigger(context.clone()).await {
-                    Ok(success) => success,
-                    Err(err_msg) => {
-                        format!("Wachin, hubo un error con tu regex: \n {}", err_msg)
-                    }
+                    Ok(success) => "Trigger agregado, master",
+                    Err(err) => &err.to_string()
                 };
                 context.send_message(response).call().await.unwrap();
             },
@@ -89,20 +97,23 @@ impl Module for Triggers {
             "triggered",
             "Ver qué triggers matchean con este mensaje",
             |context| async move {
-                let input = &context.text.value;
-                let matches = Triggers::match_con_mensaje(&input).await;
-                if matches.len() > 0 {
-                    context
-                        .send_message(format!("Triggers que matchean: \n "))
-                        .call()
-                        .await
-                        .unwrap();
+                if let Some(input) = &context.reply_to {
+                    // let input = input.text;
+                    // let msg_id = input.id;
+                    // let response =
+                    //     match Triggers::match_con_mensaje(input.reply_to).await {
+                    //         Ok(found) if found.len() > 1 => {
+                    //             let matches: Vec<String> = found.into_iter().map(|r|r.regexp).collect();
+                    //             format!("Triggers que matchean: \n {}", matches.join("\n"))
+                    //         }
+                    //         err => "".to_string()
+                    //     };
                 }
             },
         );
         bot.text(|context| async move {
             let input = &context.text.value;
-            let matches = Triggers::match_con_mensaje(&input).await;
+            let matches = Triggers::match_con_mensaje(&input).await.unwrap();
             if let Some(trigger) = matches.first() {
                 if let Some(r) = Triggers::recuperar_un_trigger(trigger.id).await {
                     let chat_id = tbot::types::chat::Id(r.chat_id);
