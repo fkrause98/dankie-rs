@@ -8,6 +8,8 @@ use sea_orm::prelude::*;
 use sea_orm::{NotSet, Set};
 use std::ops::Deref;
 use tbot::contexts::methods::Message;
+use tbot::contexts::Text;
+use tbot::types::message::Kind;
 use tbot::types::parameters::ImplicitChatId;
 pub async fn fetch_regexes() -> Result<Vec<global_regex::Model>> {
     Ok(GlobalRegex::find()
@@ -54,24 +56,32 @@ impl Triggers {
         Ok(())
     }
     pub async fn listar_triggers(context: BotCommand) {
-        let regexes: Vec<String> = fetch_regexes().await.unwrap().into_iter().map(|r| r.regexp).collect();
+        let regexes: Vec<String> = fetch_regexes()
+            .await
+            .unwrap()
+            .into_iter()
+            .map(|r| r.regexp)
+            .collect();
         let response = format!("Triggers conocidos: \n {}", regexes.join("\n"));
         context.send_message(response).call().await.unwrap();
     }
+
     pub async fn match_con_mensaje(txt: &str) -> Result<Vec<global_regex::Model>, TriggerError> {
         let regexes = fetch_regexes().await.map_err(|_| TriggerError::NoMatch)?;
-        let set = RegexSet::new(regexes.iter().map(|r| &r.regexp)).unwrap();
+        let set =
+            RegexSet::new(regexes.iter().map(|r| &r.regexp)).map_err(|_| TriggerError::NoMatch)?;
         let matching_regexes: Vec<_> = set.matches(txt).into_iter().collect();
-        Ok(matching_regexes
-            .iter()
-            .map(|&index| regexes[index].clone())
-            .collect())
+        if matching_regexes.len() == 0 {
+            return Err(NoMatch);
+        } else {
+            Ok(matching_regexes
+                .iter()
+                .map(|&index| regexes[index].clone())
+                .collect())
+        }
     }
     pub async fn recuperar_un_trigger(id: i64) -> Option<global_regex::Model> {
-        GlobalRegex::find_by_id(id)
-            .one(DB.deref())
-            .await
-            .ok()?
+        GlobalRegex::find_by_id(id).one(DB.deref()).await.ok()?
     }
 }
 impl Module for Triggers {
@@ -83,7 +93,7 @@ impl Module for Triggers {
                 // Comprobar que agregar sea en base a una respuesta
                 let response = match Triggers::agregar_trigger(context.clone()).await {
                     Ok(success) => "Trigger agregado, master",
-                    Err(err) => &err.to_string()
+                    Err(err) => &err.to_string(),
                 };
                 context.send_message(response).call().await.unwrap();
             },
@@ -97,30 +107,36 @@ impl Module for Triggers {
             "triggered",
             "Ver qué triggers matchean con este mensaje",
             |context| async move {
-                if let Some(input) = &context.reply_to {
-                    // let input = input.text;
-                    // let msg_id = input.id;
-                    // let response =
-                    //     match Triggers::match_con_mensaje(input.reply_to).await {
-                    //         Ok(found) if found.len() > 1 => {
-                    //             let matches: Vec<String> = found.into_iter().map(|r|r.regexp).collect();
-                    //             format!("Triggers que matchean: \n {}", matches.join("\n"))
-                    //         }
-                    //         err => "".to_string()
-                    //     };
+                if let Some(input) = &context.reply_to.clone() {
+                    let input = match &input.kind {
+                        Kind::Text(t) => &t.value,
+                        _ => unreachable!(),
+                    };
+                    let response =
+                    match Triggers::match_con_mensaje(input).await {
+                        Ok(found) => {
+                            let matches: Vec<String> = found.into_iter().map(|r|r.regexp).collect();
+                            format!("Triggers que matchean: \n {}", matches.join("\n"))
+                        }
+                        Err(err) => err.to_string()
+                    };
+                    context.send_message_in_reply(response).call().await.unwrap();
                 }
             },
         );
         bot.text(|context| async move {
             let input = &context.text.value;
-            let matches = Triggers::match_con_mensaje(&input).await.unwrap();
-            if let Some(trigger) = matches.first() {
-                if let Some(r) = Triggers::recuperar_un_trigger(trigger.id).await {
-                    let chat_id = tbot::types::chat::Id(r.chat_id);
-                    let msg_id = tbot::types::message::Id(r.msg_id as u32);
-                    context.forward_here(chat_id, msg_id).call().await;
-                }
-            } else {}
-        })
+            Triggers::match_con_mensaje(&input)
+                .await
+                .map(|matches| async move {
+                    if let Some(trigger) = matches.first() {
+                        if let Some(r) = Triggers::recuperar_un_trigger(trigger.id).await {
+                            let chat_id = tbot::types::chat::Id(r.chat_id);
+                            let msg_id = tbot::types::message::Id(r.msg_id as u32);
+                            context.forward_here(chat_id, msg_id).call().await;
+                        }
+                    }
+                });
+        });
     }
 }
