@@ -42,7 +42,7 @@ impl Triggers {
             return Err(NoSelectedReply);
         };
         // Chequear que la regex sea válida.
-        let _ = Regex::new(&context.text.value).map_err(|err| InvalidRegex(err))?;
+        Regex::new(&context.text.value).map_err(|err| InvalidRegex(err))?;
         // Cambios para la db
         let trigger = global_regex::ActiveModel {
             regexp: Set(context.text.value.clone()),
@@ -52,7 +52,7 @@ impl Triggers {
             ..Default::default()
         };
         // Insertar los cambios, y si no early return.
-        let _ = trigger.insert(DB.deref()).await.map_err(|_| GenericErr)?;
+        trigger.insert(DB.deref()).await.map_err(|_| GenericErr)?;
         Ok(())
     }
     pub async fn listar_triggers(context: BotCommand) {
@@ -72,7 +72,7 @@ impl Triggers {
             RegexSet::new(regexes.iter().map(|r| &r.regexp)).map_err(|_| TriggerError::NoMatch)?;
         let matching_regexes: Vec<_> = set.matches(txt).into_iter().collect();
         if matching_regexes.len() == 0 {
-            return Err(NoMatch);
+            Err(NoMatch)
         } else {
             Ok(matching_regexes
                 .iter()
@@ -112,31 +112,35 @@ impl Module for Triggers {
                         Kind::Text(t) => &t.value,
                         _ => unreachable!(),
                     };
-                    let response =
-                    match Triggers::match_con_mensaje(input).await {
+                    let response = match Triggers::match_con_mensaje(input).await {
                         Ok(found) => {
-                            let matches: Vec<String> = found.into_iter().map(|r|r.regexp).collect();
+                            let matches: Vec<String> =
+                                found.into_iter().map(|r| r.regexp).collect();
                             format!("Triggers que matchean: \n {}", matches.join("\n"))
                         }
-                        Err(err) => err.to_string()
+                        Err(err) => err.to_string(),
                     };
-                    context.send_message_in_reply(response).call().await.unwrap();
+                    context
+                        .send_message_in_reply(response)
+                        .call()
+                        .await
+                        .unwrap();
                 }
             },
         );
         bot.text(|context| async move {
             let input = &context.text.value;
-            Triggers::match_con_mensaje(&input)
-                .await
-                .map(|matches| async move {
-                    if let Some(trigger) = matches.first() {
-                        if let Some(r) = Triggers::recuperar_un_trigger(trigger.id).await {
-                            let chat_id = tbot::types::chat::Id(r.chat_id);
-                            let msg_id = tbot::types::message::Id(r.msg_id as u32);
-                            context.forward_here(chat_id, msg_id).call().await;
-                        }
+            let matches = Triggers::match_con_mensaje(&input).await;
+            match matches {
+                Ok(matches) if matches.first().is_some() => {
+                    if let Some(r) = Triggers::recuperar_un_trigger(matches[0].id).await {
+                        let chat_id = tbot::types::chat::Id(r.chat_id);
+                        let msg_id = tbot::types::message::Id(r.msg_id as u32);
+                        context.forward_here(chat_id, msg_id).call().await;
                     }
-                });
+                }
+                _ => {}
+            }
         });
     }
 }

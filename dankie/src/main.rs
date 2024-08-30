@@ -31,5 +31,9 @@ async fn main() {
     for module in modules {
         module.load(&mut bot);
     }
-    bot.polling().start().await.unwrap();
+    bot.webhook(env!("WEBHOOK_URL"), env!("WEBHOOK_PORT"))
+        .http()
+        .start()
+        .await
+        .unwrap();
 }
