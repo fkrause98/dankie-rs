@@ -21,3 +21,13 @@ Cargo.lock
 #.idea/
 
 .pg
+# Devenv
+.devenv*
+devenv.local.nix
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
+.devenv
