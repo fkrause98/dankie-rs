@@ -42,7 +42,6 @@
 
               enterShell = "";
 
-              processes.migrate = "sea-orm-cli migrate up";
               services.postgres = {
                 enable = true;
                 package = pkgs.postgresql_16;
