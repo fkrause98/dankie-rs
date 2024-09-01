@@ -40,12 +40,14 @@
                 sea-orm-cli
               ];
 
-              enterShell = "";
+              enterShell = "sea-orm-cli migrate up";
 
               services.postgres = {
                 enable = true;
                 package = pkgs.postgresql_16;
-                initialDatabases = [{ name = "postgres"; }];
+                initialDatabases = [{ name = "dankie"; }];
+                port = "5432";
+                listen_addresses = "127.0.0.1";
               };
             }];
           };
