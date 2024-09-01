@@ -48,6 +48,10 @@
                 initialDatabases = [{ name = "dankie"; }];
                 port = 5432;
                 listen_addresses = "127.0.0.1";
+                initScript = ''
+                  CREATE ROLE postgres SUPERUSER;
+                  ALTER USER postgres PASSWORD postgres;
+                '';
               };
             }];
           };
