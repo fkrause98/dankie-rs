@@ -46,7 +46,7 @@
                 enable = true;
                 package = pkgs.postgresql_16;
                 initialDatabases = [{ name = "dankie"; }];
-                port = "5432";
+                port = 5432;
                 listen_addresses = "127.0.0.1";
               };
             }];
