@@ -40,7 +40,7 @@
                 sea-orm-cli
               ];
 
-              enterShell = "sea-orm-cli migrate up";
+              enterShell = "";
 
               services.postgres = {
                 enable = true;
