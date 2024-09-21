@@ -23,18 +23,16 @@ fn init_db() -> DatabaseConnection {
         })
     })
 }
-
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    let bot_token = std::env::var("BOT_TOKEN").expect("Missing BOT TOKEN");
     let webhook_url = std::env::var("WEBHOOK_URL").expect("Missing webhook");
-    let port = std::env::var("PORT").expect("Missing port");
-    let mut bot = tbot::Bot::from_env(&bot_token).event_loop();
+    let port = std::env::var("PORT").expect("Missing port").parse::<u16>().expect("Port must be a number");
+    let mut bot = tbot::Bot::from_env("BOT_TOKEN").event_loop();
     let modules = modules![crate::triggers::Triggers, crate::dolar::Dolar];
     for module in modules {
         module.load(&mut bot);
     }
     // bot.polling().start().await.unwrap();
-    bot.webhook(env!("WEBHOOK_URL"), std).http().start().await.unwrap();
+    bot.webhook(&webhook_url, port).http().start().await.unwrap();
 }
