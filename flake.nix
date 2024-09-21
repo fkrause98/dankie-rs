@@ -9,20 +9,17 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-
   nixConfig = {
     extra-trusted-public-keys =
       "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=";
     extra-substituters = "https://devenv.cachix.org";
   };
-
   outputs = { self, nixpkgs, devenv, systems, rust-overlay, ... }@inputs:
     let forEachSystem = nixpkgs.lib.genAttrs (import systems);
     in {
       packages = forEachSystem (system: {
         devenv-up = self.devShells.${system}.default.config.procfileScript;
       });
-
       devShells = forEachSystem (system:
         let
           overlays = [ (import rust-overlay) ];
@@ -32,16 +29,22 @@
             inherit inputs pkgs;
             modules = [{
               # https://devenv.sh/reference/options/
-              packages = with pkgs; [
-                rust-bin.stable.latest.default
-                openssl
-                pkg-config
-                fish
-                sea-orm-cli
-              ];
-
+              packages = with pkgs;
+                [
+                  rust-bin.stable.latest.default
+                  openssl
+                  pkg-config
+                  fish
+                  sea-orm-cli
+                ] ++ (if pkgs.stdenv.isDarwin then [
+                  # Include macOS-specific packages and frameworks
+                  pkgs.darwin.apple_sdk.frameworks.Security
+                  pkgs.darwin.apple_sdk.frameworks.CoreFoundation
+                  pkgs.darwin.apple_sdk.frameworks.CoreServices
+                  pkgs.darwin.apple_sdk.frameworks.SystemConfiguration
+                ] else
+                  [ ]);
               enterShell = "";
-
               services.postgres = {
                 enable = true;
                 package = pkgs.postgresql_16;

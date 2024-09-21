@@ -4,6 +4,7 @@ pub type TxtMsg = std::sync::Arc<tbot::contexts::Text>;
 pub mod entities;
 #[macro_use]
 pub mod module;
+pub mod dolar;
 pub mod triggers;
 
 use module::Module;
@@ -25,11 +26,11 @@ fn init_db() -> DatabaseConnection {
 
 #[tokio::main]
 async fn main() {
-    pretty_env_logger::init();
-    let mut bot = tbot::from_env!("BOT_TOKEN").event_loop();
-    let modules = modules![crate::triggers::Triggers];
-    for module in modules {
-        module.load(&mut bot);
-    }
-    bot.polling().start().await.unwrap();
+    // pretty_env_logger::init();
+    // let mut bot = tbot::from_env!("BOT_TOKEN").event_loop();
+    // let modules = modules![crate::triggers::Triggers];
+    // for module in modules {
+    //     module.load(&mut bot);
+    // }
+    // bot.polling().start().await.unwrap();
 }
