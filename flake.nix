@@ -36,6 +36,7 @@
                   pkg-config
                   fish
                   sea-orm-cli
+                  nodePackages_latest.localtunnel
                 ] ++ (if pkgs.stdenv.isDarwin then [
                   # Include macOS-specific packages and frameworks
                   pkgs.darwin.apple_sdk.frameworks.Security
