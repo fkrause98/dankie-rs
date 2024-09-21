@@ -5,12 +5,10 @@ use crate::{Bot, BotCommand, DB};
 use anyhow::Result;
 use regex::{Regex, RegexSet};
 use sea_orm::prelude::*;
-use sea_orm::{NotSet, Set};
+use sea_orm::Set;
 use std::ops::Deref;
 use tbot::contexts::methods::Message;
-use tbot::contexts::Text;
 use tbot::types::message::Kind;
-use tbot::types::parameters::ImplicitChatId;
 pub async fn fetch_regexes() -> Result<Vec<global_regex::Model>> {
     Ok(GlobalRegex::find()
         .all(DB.deref())
@@ -92,7 +90,7 @@ impl Module for Triggers {
             |context| async move {
                 // Comprobar que agregar sea en base a una respuesta
                 let response = match Triggers::agregar_trigger(context.clone()).await {
-                    Ok(success) => "Trigger agregado, master",
+                    Ok(_) => "Trigger agregado, master",
                     Err(err) => &err.to_string(),
                 };
                 context.send_message(response).call().await.unwrap();
@@ -136,7 +134,7 @@ impl Module for Triggers {
                     if let Some(r) = Triggers::recuperar_un_trigger(matches[0].id).await {
                         let chat_id = tbot::types::chat::Id(r.chat_id);
                         let msg_id = tbot::types::message::Id(r.msg_id as u32);
-                        context.forward_here(chat_id, msg_id).call().await;
+                        context.forward_here(chat_id, msg_id).call().await.expect("Fatal: could not forward message");
                     }
                 }
                 _ => {}

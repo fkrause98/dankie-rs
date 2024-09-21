@@ -1,10 +1,6 @@
 use anyhow::Result;
 use serde::Deserialize;
 use tbot::contexts::methods::Message;
-use tbot::contexts::Text;
-use tbot::types::message::Kind;
-use tbot::types::parameters::ImplicitChatId;
-use thiserror::Error;
 use core::fmt::Display;
 use core::fmt;
 
